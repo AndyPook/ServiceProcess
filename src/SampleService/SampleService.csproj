@@ -51,7 +51,7 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\src\ServiceProcess\ServiceProcess.csproj">
+    <ProjectReference Include="..\ServiceProcess\ServiceProcess.csproj">
       <Project>{7a6baf21-cada-4954-abbe-8a3eb1af74a3}</Project>
       <Name>ServiceProcess</Name>
     </ProjectReference>
