@@ -1,0 +1,20 @@
+<?xml version="1.0"?>
+<package >
+  <metadata>
+    <id>Pook.ServiceProcess</id>
+    <version>$version$</version>
+    <title>Pook.ServiceProcess</title>
+    <authors>Andy Pook</authors>
+    <owners>Andy Pook</owners>
+    <projectUrl>https://github.com/AndyPook/ServiceProcess</projectUrl>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <description>A Simple framework for Windows Services</description>
+    <copyright>Copyright 2016</copyright>
+    <tags>ServiceProcess Windows Service</tags>
+    <dependencies>
+    </dependencies>
+  </metadata>
+    <files>
+        <file src="bin\$configuration$\ServiceProcess.dll" target="lib\net45\ServiceProcess.dll" />
+    </files>
+</package>
