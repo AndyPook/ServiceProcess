@@ -23,7 +23,6 @@ namespace Pook.ServiceProcess
 
 		private readonly Func<T> instanceFactory;
 		private T instance;
-		public T Instance { get { return instance; } }
 
 		private static Action<T> GetMethod(string name)
 		{
@@ -56,18 +55,37 @@ namespace Pook.ServiceProcess
 			return (i, args) => withArgs.Invoke(i, new object[] { args });
 		}
 
-		public Action<T> StartAction { get; private set; }
-		public Action<T> StopAction { get; private set; }
-		public Action<T, IEnumerable<string>> WithArgsAction { get; private set; }
+		public Action<T> StartAction { get; }
+		public Action<T> StopAction { get; }
+		public Action<T, IEnumerable<string>> WithArgsAction { get; }
 
 		public void Start(string[] args)
 		{
 			OnStart(args);
 		}
 
+		private string GetVersion()
+		{
+			var assy = Assembly.GetEntryAssembly();
+			if (assy == null)
+				return string.Empty;
+
+			// try get InformationalVersion as this supports full SemVer 
+			object[] infoVerAttributes = assy.GetCustomAttributes(typeof(AssemblyInformationalVersionAttribute), false);
+			if (infoVerAttributes.Length > 0)
+				return ((AssemblyInformationalVersionAttribute)infoVerAttributes[0]).InformationalVersion;
+
+			// fall back to FileVersion 
+			object[] fileVerAttributes = assy.GetCustomAttributes(typeof(AssemblyFileVersionAttribute), false);
+			if (fileVerAttributes.Length > 0)
+				return ((AssemblyFileVersionAttribute)fileVerAttributes[0]).Version;
+
+			return string.Empty;
+		}
+
 		protected override void OnStart(string[] args)
 		{
-			Trace.WriteLine("Service: " + ServiceName + " (" + typeof(T).Name + ") " + SemVer.Current);
+			Trace.WriteLine("Service: " + ServiceName + " (" + typeof(T).Name + ") " + GetVersion());
 			Trace.WriteLine("Starting...");
 
 			args = IncludeCommandLineArgs(args).ToArray();
