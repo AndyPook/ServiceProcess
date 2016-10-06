@@ -149,7 +149,7 @@ namespace Pook.ServiceProcess
 					break;
 
 				case ServiceAction.RunAsService:
-					var svc = config.ServiceFactory();
+					var svc = config.CreateService();
 					// ReSharper disable once AssignNullToNotNullAttribute
 					Environment.CurrentDirectory = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
 					if (config.BelowNormalPriority)
@@ -161,7 +161,7 @@ namespace Pook.ServiceProcess
 
 		private static void RunAsConsole(ServiceConfig config)
 		{
-			var svc = config.ServiceFactory();
+			var svc = config.CreateService();
 			try
 			{
 				// We've already dealt with the args

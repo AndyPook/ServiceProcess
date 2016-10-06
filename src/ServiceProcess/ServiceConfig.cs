@@ -61,9 +61,9 @@ namespace Pook.ServiceProcess
 			private set { executablePath = value; }
 		}
 
-		public Func<ServiceBase> serviceFactory;
+		private Func<ServiceBase> serviceFactory;
 
-		public ServiceBase ServiceFactory()
+		public ServiceBase CreateService()
 		{
 			var svc = serviceFactory();
 			svc.ServiceName = ServiceName;
