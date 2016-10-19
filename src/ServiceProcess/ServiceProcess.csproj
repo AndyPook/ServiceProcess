@@ -7,8 +7,8 @@
     <ProjectGuid>{7A6BAF21-CADA-4954-ABBE-8A3EB1AF74A3}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>ServiceProcess</RootNamespace>
-    <AssemblyName>ServiceProcess</AssemblyName>
+    <RootNamespace>Pook.ServiceProcess</RootNamespace>
+    <AssemblyName>Pook.ServiceProcess</AssemblyName>
     <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>

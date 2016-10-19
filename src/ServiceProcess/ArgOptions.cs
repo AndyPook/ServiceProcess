@@ -112,8 +112,8 @@ namespace Pook.ServiceProcess
 			private readonly string key;
 			private readonly string value;
 
-			public string Key { get { return key; } }
-			public string Value { get { return value; } }
+			public string Key => key;
+			public string Value => value;
 
 			public override string ToString()
 			{

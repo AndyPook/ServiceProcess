@@ -13,7 +13,7 @@ namespace Pook.ServiceProcess
 		public ServiceBaseWrapper(Func<T> instanceFactory, Action<T> start = null, Action<T> stop = null)
 		{
 			if (instanceFactory == null)
-				throw new ArgumentNullException("instanceFactory");
+				throw new ArgumentNullException(nameof(instanceFactory));
 			this.instanceFactory = instanceFactory;
 
 			StartAction = start ?? GetMethod("Start");
@@ -148,8 +148,7 @@ namespace Pook.ServiceProcess
 			stopped = true;
 
 			var disposableService = instance as IDisposable;
-			if (disposableService != null)
-				disposableService.Dispose();
+			disposableService?.Dispose();
 		}
 	}
 }

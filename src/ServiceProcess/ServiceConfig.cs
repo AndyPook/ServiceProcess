@@ -49,10 +49,10 @@ namespace Pook.ServiceProcess
 		internal string Description { get; private set; }
 		internal string[] ServicesDependedOn { get; private set; }
 
-		public IEnumerable<string> ServiceArgs { get { return serviceArgs; } }
+		public IEnumerable<string> ServiceArgs => serviceArgs;
 		internal ServiceStartMode StartMode { get; private set; }
 
-		public bool BelowNormalPriority { get; set; }
+		public ProcessPriorityClass Priority { get; set; }
 
 		private string executablePath;
 		public string ExePath
@@ -154,12 +154,22 @@ namespace Pook.ServiceProcess
 
 		public ServiceConfig WithBelowNormalPriority()
 		{
-			BelowNormalPriority = true;
+			Priority = ProcessPriorityClass.BelowNormal;
 			return this;
 		}
 		public ServiceConfig WithNormalPriority()
 		{
-			BelowNormalPriority = false;
+			Priority = ProcessPriorityClass.Normal;
+			return this;
+		}
+		public ServiceConfig WithHighPriority()
+		{
+			Priority = ProcessPriorityClass.High;
+			return this;
+		}
+		public ServiceConfig WithPriority(ProcessPriorityClass priority)
+		{
+			Priority = priority;
 			return this;
 		}
 
@@ -330,8 +340,8 @@ namespace Pook.ServiceProcess
 			return this;
 		}
 
-		public bool IsAutomatic { get { return StartMode == ServiceStartMode.Automatic || StartMode == ServiceStartMode.Delayed; } }
-		public bool IsDelayedAutoStart { get { return StartMode == ServiceStartMode.Delayed; } }
+		public bool IsAutomatic => StartMode == ServiceStartMode.Automatic || StartMode == ServiceStartMode.Delayed;
+		public bool IsDelayedAutoStart => StartMode == ServiceStartMode.Delayed;
 
 		/// <summary>
 		/// Start the service

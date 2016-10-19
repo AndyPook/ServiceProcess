@@ -73,11 +73,17 @@ namespace Pook.ServiceProcess
 				{
 					switch (v)
 					{
+						case "a":
 						case "auto":
 							config.StartAutomatically();
 							break;
+						case "m":
 						case "manual":
 							config.StartManually();
+							break;
+						case "d":
+						case "delayed":
+							config.StartDelayed();
 							break;
 					}
 				})
@@ -87,11 +93,20 @@ namespace Pook.ServiceProcess
 					{
 						case "b":
 						case "belownormal":
-							config.BelowNormalPriority = true;
+							config.WithPriority(ProcessPriorityClass.BelowNormal);
 							break;
 						case "n":
 						case "normal":
-							config.BelowNormalPriority = false;
+							config.WithPriority(ProcessPriorityClass.Normal);
+							break;
+						case "h":
+						case "high":
+							config.WithPriority(ProcessPriorityClass.High);
+							break;
+						default:
+							ProcessPriorityClass priority;
+							if (Enum.TryParse(v, true, out priority))
+								config.WithPriority(priority);
 							break;
 					}
 				})
@@ -123,14 +138,14 @@ namespace Pook.ServiceProcess
 				.On("-?", v =>
 				{
 					Console.WriteLine("Available options:");
-					Console.WriteLine("  -u                             Uninstall the windows service");
-					Console.WriteLine("  -i                             Install as a windows service");
-					Console.WriteLine("  -c                             Run as a console app");
-					Console.WriteLine("  -w[=seconds]                   Wait on newline (or seconds) before starting the service (allows for attaching debugger)");
-					Console.WriteLine("  -priority=[normal|belownormal] Set the service priority");
-					Console.WriteLine("  -start=[delayed|auto|manual]   Set the service start mode");
-					Console.WriteLine("  -name=<someName>               Override the name of the service");
-					Console.WriteLine("  [service args]                 Other arguments are passed to the service");
+					Console.WriteLine("  -u                                  Uninstall the windows service");
+					Console.WriteLine("  -i                                  Install as a windows service");
+					Console.WriteLine("  -c                                  Run as a console app");
+					Console.WriteLine("  -w[=seconds]                        Wait on newline (or seconds) before starting the service (allows for attaching debugger)");
+					Console.WriteLine("  -priority=[normal|belownormal|high] Set the service priority");
+					Console.WriteLine("  -start=[delayed|auto|manual]        Set the service start mode");
+					Console.WriteLine("  -name=<someName>                    Override the name of the service");
+					Console.WriteLine("  [service args]                      Other arguments are passed to the service");
 				})
 				.Execute();
 
@@ -145,6 +160,7 @@ namespace Pook.ServiceProcess
 					WindowsServiceInstaller.InstallService(config);
 					break;
 				case ServiceAction.Uninstall:
+					config.RemoveArg("-u");
 					WindowsServiceInstaller.UninstallService(config.ServiceName);
 					break;
 
@@ -152,8 +168,8 @@ namespace Pook.ServiceProcess
 					var svc = config.CreateService();
 					// ReSharper disable once AssignNullToNotNullAttribute
 					Environment.CurrentDirectory = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
-					if (config.BelowNormalPriority)
-						Process.GetCurrentProcess().PriorityClass = ProcessPriorityClass.BelowNormal;
+					if (config.Priority != ProcessPriorityClass.Normal)
+						Process.GetCurrentProcess().PriorityClass = config.Priority;
 					ServiceBase.Run(svc);
 					break;
 			}
@@ -181,9 +197,7 @@ namespace Pook.ServiceProcess
 			try
 			{
 				Stop(svc);
-				var disposableService = svc as IDisposable;
-				if (disposableService != null)
-					disposableService.Dispose();
+				svc?.Dispose();
 			}
 			catch (Exception ex)
 			{
