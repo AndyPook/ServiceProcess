@@ -59,10 +59,10 @@ namespace Pook.ServiceProcess
 					{
 						ti.Installers.Add(wsi);
 						var ctx = new InstallContext(null, config.ServiceArgs.ToArray());
-						
+
 						// Value may be changed by FixImagePath
 						ctx.Parameters["assemblypath"] = $"{config.ExePath}";
-						
+
 						ti.Context = ctx;
 						ti.Install(new Hashtable());
 					}
@@ -99,10 +99,10 @@ namespace Pook.ServiceProcess
 			};
 
 			Installers.AddRange(
-				new Installer[] 
+				new Installer[]
 				{
-            serviceProcessInstaller,
-            serviceInstaller
+			serviceProcessInstaller,
+			serviceInstaller
 				});
 		}
 
@@ -126,10 +126,10 @@ namespace Pook.ServiceProcess
 			if (disposing)
 				components?.Dispose();
 
-		    serviceInstaller?.Dispose();
-		    serviceProcessInstaller?.Dispose();
+			serviceInstaller?.Dispose();
+			serviceProcessInstaller?.Dispose();
 
-		    base.Dispose(disposing);
+			base.Dispose(disposing);
 		}
 	}
 }
