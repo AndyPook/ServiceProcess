@@ -32,7 +32,7 @@ namespace Pook.ServiceProcess
 					{
 						ti.Installers.Add(pi);
 						var ctx = new InstallContext();
-						ctx.Parameters["assemblypath"] = string.Format("\"{0}\"", exePath);
+						ctx.Parameters["assemblypath"] = $"\"{exePath}\"";
 						ti.Context = ctx;
 						ti.Uninstall(null);
 					}
@@ -61,7 +61,7 @@ namespace Pook.ServiceProcess
 						var ctx = new InstallContext(null, config.ServiceArgs.ToArray());
 						
 						// Value may be changed by FixImagePath
-						ctx.Parameters["assemblypath"] = string.Format("{0}", config.ExePath);
+						ctx.Parameters["assemblypath"] = $"{config.ExePath}";
 						
 						ti.Context = ctx;
 						ti.Install(new Hashtable());
@@ -123,15 +123,13 @@ namespace Pook.ServiceProcess
 		/// <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
 		protected override void Dispose(bool disposing)
 		{
-			if (disposing && (components != null))
-				components.Dispose();
+			if (disposing)
+				components?.Dispose();
 
-			if (serviceInstaller != null)
-				serviceInstaller.Dispose();
-			if (serviceProcessInstaller != null)
-				serviceProcessInstaller.Dispose();
+		    serviceInstaller?.Dispose();
+		    serviceProcessInstaller?.Dispose();
 
-			base.Dispose(disposing);
+		    base.Dispose(disposing);
 		}
 	}
 }
