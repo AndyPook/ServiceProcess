@@ -23,12 +23,14 @@ The ```SampleServiceHost``` class is a simple POCO with a couple of well-known m
  * "Stop()"  run at service shutdown
  * If the class implements IDisposable "Dispose()" will also be called
  * "WithArgs(IEnumerable<string>)" will be called before Start if any commandline args are provided
+   
+   Use ArgOptions to process (see ```WindowsServiceHelper``` for an example)
+
+The process will detect if it is being run from the command line (or VS)
  
 Serveral command line args are understood by this framework
- * "-c" run as a console app instead of service. 
- Very useful for dev and debugging. 
- Typically add "-c" as an arg in the "debug" tab of the project properties
  * "-i" install as a service
  * "-u" uninstall the service
+ * "-name=fred" overrides the name of the service
  
 See ```WindowsServiceHelper``` for more options.
