@@ -52,7 +52,7 @@ namespace Pook.ServiceProcess
 		public IEnumerable<string> ServiceArgs { get { return serviceArgs; } }
 		internal ServiceStartMode StartMode { get; private set; }
 
-		public bool BelowNormalPriority { get; set; }
+		public ProcessPriorityClass Priority { get; private set; }
 
 		private string executablePath;
 		public string ExePath
@@ -154,12 +154,22 @@ namespace Pook.ServiceProcess
 
 		public ServiceConfig WithBelowNormalPriority()
 		{
-			BelowNormalPriority = true;
+			Priority = ProcessPriorityClass.BelowNormal;
 			return this;
 		}
 		public ServiceConfig WithNormalPriority()
 		{
-			BelowNormalPriority = false;
+			Priority = ProcessPriorityClass.Normal;
+			return this;
+		}
+		public ServiceConfig WithHighPriority()
+		{
+			Priority = ProcessPriorityClass.High;
+			return this;
+		}
+		public ServiceConfig WithPriority(ProcessPriorityClass priority)
+		{
+			Priority = priority;
 			return this;
 		}
 
@@ -252,14 +262,14 @@ namespace Pook.ServiceProcess
 		/// <para>ls, localservice</para>
 		/// <para>ns, network, networkservice</para>
 		/// </summary>
-		/// <param name="builtinAccount"></param>
+		/// <param name="account"></param>
 		/// <returns></returns>
-		public ServiceConfig RunAs(string builtinAccount)
+		public ServiceConfig RunAs(string account)
 		{
-			if (string.IsNullOrWhiteSpace(builtinAccount))
+			if (string.IsNullOrWhiteSpace(account))
 				return this;
 
-			switch (builtinAccount.ToLowerInvariant())
+			switch (account.ToLowerInvariant())
 			{
 				case "l":
 				case "local":
@@ -274,6 +284,12 @@ namespace Pook.ServiceProcess
 				case "network":
 				case "networkservice":
 					RunAsNetworkService();
+					break;
+				default:
+					var parts = account.Split(';');
+					if (parts.Length != 2)
+						throw new ArgumentException("RunAsUser needs 'user;Password'");
+					RunAsUser(parts[0], parts[1]);
 					break;
 			}
 

@@ -75,11 +75,17 @@ namespace Pook.ServiceProcess
 				{
 					switch (v)
 					{
+						case "a":
 						case "auto":
 							config.StartAutomatically();
 							break;
+						case "m":
 						case "manual":
 							config.StartManually();
+							break;
+						case "d":
+						case "delayed":
+							config.StartDelayed();
 							break;
 					}
 				})
@@ -89,11 +95,20 @@ namespace Pook.ServiceProcess
 					{
 						case "b":
 						case "belownormal":
-							config.BelowNormalPriority = true;
+							config.WithBelowNormalPriority();
 							break;
 						case "n":
 						case "normal":
-							config.BelowNormalPriority = false;
+							config.WithNormalPriority();
+							break;
+						case "h":
+						case "high":
+							config.WithHighPriority();
+							break;
+						default:
+							ProcessPriorityClass p;
+							if (Enum.TryParse(v, true, out p))
+								config.WithPriority(p);
 							break;
 					}
 				})
@@ -129,7 +144,7 @@ namespace Pook.ServiceProcess
 					Console.WriteLine("  -i                             Install as a windows service");
 					Console.WriteLine("  -c                             Run as a console app");
 					Console.WriteLine("  -w[=seconds]                   Wait on newline (or seconds) before starting the service (allows for attaching debugger)");
-					Console.WriteLine("  -priority=[normal|belownormal] Set the service priority");
+					Console.WriteLine("  -priority=[high|belownormal]   Set the service priority");
 					Console.WriteLine("  -start=[delayed|auto|manual]   Set the service start mode");
 					Console.WriteLine("  -name=<someName>               Override the name of the service");
 					Console.WriteLine("  [service args]                 Other arguments are passed to the service");
@@ -160,7 +175,7 @@ namespace Pook.ServiceProcess
 					var svc = config.CreateService();
 					// ReSharper disable once AssignNullToNotNullAttribute
 					Environment.CurrentDirectory = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
-					if (config.BelowNormalPriority)
+					if (config.Priority != ProcessPriorityClass.Normal)
 						Process.GetCurrentProcess().PriorityClass = ProcessPriorityClass.BelowNormal;
 					ServiceBase.Run(svc);
 					break;
