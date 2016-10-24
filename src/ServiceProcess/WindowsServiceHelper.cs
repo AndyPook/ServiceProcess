@@ -13,8 +13,9 @@ namespace Pook.ServiceProcess
 	{
 		private enum ServiceAction
 		{
+			Unknown = 0,
 			RunAsService,
-			Console,
+			RunAsConsole,
 			Install,
 			Uninstall
 		}
@@ -62,13 +63,14 @@ namespace Pook.ServiceProcess
 		}
 		public static void Start(ServiceConfig config)
 		{
-			var action = ServiceAction.RunAsService;
+			var action = ServiceAction.Unknown;
 
 			ArgOptions
 				.With(config.ServiceArgs)
 				.On("-i", v => action = ServiceAction.Install)
 				.On("-u", v => action = ServiceAction.Uninstall)
-				.On("-c", v => action = ServiceAction.Console)
+				.On("-c", v => action = ServiceAction.RunAsConsole)
+				.On("-s", v => action = ServiceAction.RunAsService)
 				.On("-start", v =>
 				{
 					switch (v)
@@ -93,20 +95,20 @@ namespace Pook.ServiceProcess
 					{
 						case "b":
 						case "belownormal":
-							config.WithPriority(ProcessPriorityClass.BelowNormal);
+							config.WithBelowNormalPriority();
 							break;
 						case "n":
 						case "normal":
-							config.WithPriority(ProcessPriorityClass.Normal);
+							config.WithNormalPriority();
 							break;
 						case "h":
 						case "high":
-							config.WithPriority(ProcessPriorityClass.High);
+							config.WithHighPriority();
 							break;
 						default:
-							ProcessPriorityClass priority;
-							if (Enum.TryParse(v, true, out priority))
-								config.WithPriority(priority);
+							ProcessPriorityClass p;
+							if (Enum.TryParse(v, true, out p))
+								config.WithPriority(p);
 							break;
 					}
 				})
@@ -149,9 +151,15 @@ namespace Pook.ServiceProcess
 				})
 				.Execute();
 
+			if (action == ServiceAction.Unknown)
+				action =
+					Environment.UserInteractive ?
+					ServiceAction.RunAsConsole :
+					ServiceAction.RunAsService;
+
 			switch (action)
 			{
-				case ServiceAction.Console:
+				case ServiceAction.RunAsConsole:
 					RunAsConsole(config);
 					break;
 
