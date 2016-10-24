@@ -40,6 +40,7 @@ namespace Pook.ServiceProcess
 		private ServiceConfig()
 		{
 			RunAsLocalSystem();
+			Priority = ProcessPriorityClass.Normal;
 		}
 
 		private readonly List<string> serviceArgs = new List<string>();
